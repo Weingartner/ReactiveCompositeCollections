@@ -1,34 +1,34 @@
-<?xml version="1.0"?>
-<package >
-  <metadata>
-    <id>ReactiveCompositeCollections</id>
-    <version>0.0.1</version>
-    <title>ReactiveCompositeCollections</title>
-    <authors>Brad Phelan</authors>
-    <owners>Weingartner Machinen Bau</owners>
-    <description>
-        A library for composing reactive collections using Linq operators 
-    </description>
-    <releaseNotes>
-    </releaseNotes>
-    <summary>
-        A library for composing reactive collections using Linq operators 
-    </summary>
-    <language>en-US</language>
-    <projectUrl>https://nuget.org/packages/ReactiveCompositeCollections</projectUrl>
-    <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
-    <copyright>Weingartner 2015</copyright>
-    <dependencies>
-        <group targetFramework="net40">
-          <dependency id="log4net" version="1.2.10" />
-        </group>
-    </dependencies>
-    <references></references>
-    <tags>Weingartner</tags>
-  </metadata>
-  <files>
-    <file src="tools\" target="tools" />
-  </files>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>ReactiveCompositeCollections</id>
+        <version>0.0.1</version>
+        <title>ReactiveCompositeCollections</title>
+        <authors>Brad Phelan</authors>
+        <owners>Weingartner Machinen Bau</owners>
+        <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+        <projectUrl>https://nuget.org/packages/ReactiveCompositeCollections</projectUrl>
+        <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A library for composing reactive collections using Linq operators</description>
+        <summary>A library for composing reactive collections using Linq operators</summary>
+        <releaseNotes />
+        <copyright>Weingartner 2015</copyright>
+        <language>en-US</language>
+        <tags>Weingartner</tags>
+        <dependencies>
+            <group targetFramework=".NETFramework4.0">
+                <dependency id="log4net" version="1.2.10" />
+                <dependency id="reactiveui" version="6.5.0" />
+                <dependency id="System.Collections.Immutable" version="1.1.37" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\ReactiveCompositeCollections.dll" target="lib\net40\ReactiveCompositeCollections.dll" />
+        <file src="bin\Release\ReactiveCompositeCollections.pdb" target="lib\net40\ReactiveCompositeCollections.pdb" />
+        <file src="tools\init.ps1" target="tools\init.ps1" />
+        <file src="tools\install.ps1" target="tools\install.ps1" />
+        <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
+    </files>
 </package>
