@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ReactiveCompositeCollections</id>
+    <version>0.0.1</version>
+    <title>ReactiveCompositeCollections</title>
+    <authors>Brad Phelan</authors>
+    <owners>Weingartner Machinen Bau</owners>
+    <description>
+        A library for composing reactive collections using Linq operators 
+    </description>
+    <releaseNotes>
+    </releaseNotes>
+    <summary>
+        A library for composing reactive collections using Linq operators 
+    </summary>
+    <language>en-US</language>
+    <projectUrl>https://nuget.org/packages/ReactiveCompositeCollections</projectUrl>
+    <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    <copyright>Weingartner 2015</copyright>
+    <dependencies>
+        <group targetFramework="net40">
+          <dependency id="log4net" version="1.2.10" />
+        </group>
+    </dependencies>
+    <references></references>
+    <tags>Weingartner</tags>
+  </metadata>
+  <files>
+    <file src="lib\" target="lib" />
+    <file src="tools\" target="tools" />
+    <file src="content\" target="content" />
+  </files>
+</package>
