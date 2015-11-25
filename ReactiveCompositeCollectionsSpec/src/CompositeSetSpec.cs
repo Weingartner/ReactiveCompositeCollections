@@ -104,7 +104,7 @@ namespace Weingartner.Utils.Spec
                 s.Items.Should().BeEquivalentTo("2x", "3x", "1x");
             }
             // 6 changes should be recorded
-            count.Should().Be(6);
+            count.Should().Be(5);
         }
     }
 }
