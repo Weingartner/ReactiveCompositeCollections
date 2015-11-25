@@ -7,9 +7,9 @@
         <authors>Brad Phelan</authors>
         <owners>Weingartner Machinen Bau</owners>
         <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
-        <projectUrl>https://nuget.org/packages/ReactiveCompositeCollections</projectUrl>
+        <projectUrl>https://github.com/Weingartner/ReactiveCompositeCollections</projectUrl>
         <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <description>A library for composing reactive collections using Linq operators</description>
         <summary>A library for composing reactive collections using Linq operators</summary>
         <releaseNotes />
