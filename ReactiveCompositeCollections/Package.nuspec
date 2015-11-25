@@ -6,7 +6,7 @@
         <title>ReactiveCompositeCollections</title>
         <authors>Brad Phelan</authors>
         <owners>Weingartner Machinen Bau</owners>
-        <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+        <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://nuget.org/packages/ReactiveCompositeCollections</projectUrl>
         <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
