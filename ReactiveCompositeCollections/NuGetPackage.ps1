@@ -275,31 +275,16 @@ Write-Log (Invoke-Command {.\NuGet.exe update -Self} -ErrorAction Stop)
 Write-Log " "
 Write-Log "Creating package..." -ForegroundColor Green
 
-# Create symbols package if any .pdb files are located in the lib folder
-If ((Get-ChildItem *.pdb -Path .\lib -Recurse).Count -gt 0) {
-	$packageTask = Create-Process .\NuGet.exe ("pack Package.nuspec -Symbol -Verbosity Detailed")
-	$packageTask.Start() | Out-Null
-	$packageTask.WaitForExit()
-			
-	$output = ($packageTask.StandardOutput.ReadToEnd() -Split '[\r\n]') |? {$_}
-	$error = (($packageTask.StandardError.ReadToEnd() -Split '[\r\n]') |? {$_}) 
-	Write-Log $output
-	Write-Log $error Error
+$packageTask = Create-Process .\NuGet.exe ("pack Package.nuspec -Symbol -Verbosity Detailed")
+$packageTask.Start() | Out-Null
+$packageTask.WaitForExit()
+        
+$output = ($packageTask.StandardOutput.ReadToEnd() -Split '[\r\n]') |? {$_}
+$error = (($packageTask.StandardError.ReadToEnd() -Split '[\r\n]') |? {$_}) 
+Write-Log $output
+Write-Log $error Error
 
-	$global:ExitCode = $packageTask.ExitCode
-}
-Else {
-	$packageTask = Create-Process .\NuGet.exe ("pack Package.nuspec -Verbosity Detailed")
-	$packageTask.Start() | Out-Null
-	$packageTask.WaitForExit()
-			
-	$output = ($packageTask.StandardOutput.ReadToEnd() -Split '[\r\n]') |? {$_}
-	$error = (($packageTask.StandardError.ReadToEnd() -Split '[\r\n]') |? {$_}) 
-	Write-Log $output
-	Write-Log $error Error
-
-	$global:ExitCode = $packageTask.ExitCode
-}
+$global:ExitCode = $packageTask.ExitCode
 
 # Check if package should be published
 if ($Publish -and $global:ExitCode -eq 0) {
