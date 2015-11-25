@@ -21,13 +21,13 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             using (var s = y.Subscribe())
             {
                 s.Items.Should().BeEmpty();
-                a.Add(1);
+                a.Source=a.Source.Add(1);
                 s.Items.ShouldBeEquivalentTo(new[]{1});
-                b.Add(1);
+                b.Source=b.Source.Add(1);
                 s.Items.Should().BeEquivalentTo(new[]{1,1});
-                b.Add(3);
+                b.Source=b.Source.Add(3);
                 s.Items.Should().BeEquivalentTo(new[]{1,1,3});
-                c.AddRange(new [] {5,6,8});
+                c.Source=c.Source.AddRange(new [] {5,6,8});
                 s.Items.Should().BeEquivalentTo(new[]{1,1,3,5,6,8});
             }
         }
@@ -46,22 +46,22 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 from q in p
                 select q;
 
-            b.Add(1);
-            b.Add(2);
-            a.Add(b);
+            b.Source = b.Source.Add(1);
+            b.Source = b.Source.Add(2);
+            a.Source = a.Source.Add(b);
 
             using (var s = e.Subscribe())
             {
                 s.Items.Should().BeEquivalentTo(1,2);
-                a.Remove(b);
+                a.Source = a.Source.Remove(b);
                 s.Items.Should().BeEquivalentTo();
-                a.Add(c);
+                a.Source = a.Source.Add(c);
                 s.Items.Should().BeEquivalentTo();
-                c.Add(2);
+                c.Source = c.Source.Add(2);
                 s.Items.Should().BeEquivalentTo(2);
-                c.Add(3);
+                c.Source = c.Source.Add(3);
                 s.Items.Should().BeEquivalentTo(2,3);
-                a.Add(b);
+                a.Source=a.Source.Add(b);
                 s.Items.Should().BeEquivalentTo(2,3,1,2);
             }
         }
@@ -78,10 +78,10 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 from q in p
                 select q+"x";
 
-            b.Add(1);
-            b.Add(2);
+            b.Source=b.Source.Add(1);
+            b.Source=b.Source.Add(2);
             var bt = b.Select(v=>v.ToString());
-            a.Add(bt);
+            a.Source=a.Source.Add(bt);
 
             var count = 0;
 
@@ -90,15 +90,15 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             {
                 s.WhenAnyValue(p => p.Items).Subscribe(_ => count++);
                 s.Items.Should().BeEquivalentTo("1x", "2x");
-                a.Remove(bt);
+                a.Source=a.Source.Remove(bt);
                 s.Items.Should().BeEquivalentTo();
-                a.Add(c.Select(v=>v.ToString()));
+                a.Source=a.Source.Add(c.Select(v=>v.ToString()));
                 s.Items.Should().BeEquivalentTo();
-                c.Add(2);
+                c.Source=c.Source.Add(2);
                 s.Items.Should().BeEquivalentTo("2x");
-                c.Add(3);
+                c.Source=c.Source.Add(3);
                 s.Items.Should().BeEquivalentTo("2x", "3x");
-                a.Add(bt);
+                a.Source=a.Source.Add(bt);
                 s.Items.Should().BeEquivalentTo("2x", "3x", "1x", "2x");
             }
 

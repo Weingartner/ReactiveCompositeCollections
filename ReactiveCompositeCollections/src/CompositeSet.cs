@@ -39,7 +39,7 @@ namespace Weingartner.ReactiveCompositeCollections
             ) => m.Bind(x =>
                         {
                             var data = new CompositeSourceSet<TResult>();
-                            data.Add(f(x));
+                            data.Source = data.Source.Add(f(x));
                             return data;
                         });
 
@@ -55,7 +55,7 @@ namespace Weingartner.ReactiveCompositeCollections
             ) => m.Bind(x => f(x).Bind(y =>
                                        {
                                            var data = new CompositeSourceSet<TResult>();
-                                           data.Add(g(x, y));
+                                           data.Source=data.Source.Add(g(x, y));
                                            return data;
                                        }));
 
@@ -126,7 +126,7 @@ namespace Weingartner.ReactiveCompositeCollections
     {
 
         private ImmutableHashSet<T> _Source;
-        private ImmutableHashSet<T> Source
+        public ImmutableHashSet<T> Source
         {
             get { return _Source; }
             set { this.RaiseAndSetIfChanged(ref _Source, value); }
@@ -142,7 +142,6 @@ namespace Weingartner.ReactiveCompositeCollections
         }
 
         public IObservable<ImmutableHashSet<T>> Items { get; }
-
 
         public ICompositeSet<TB> Bind<TB>(Func<T, ICompositeSet<TB>> f)
         {
@@ -162,111 +161,5 @@ namespace Weingartner.ReactiveCompositeCollections
             return Source.GetEnumerator();
         }
 
-
-
-        public void UnionWith
-            (IEnumerable<T> other)
-        {
-            Source = Source.Union(other);
-        }
-
-        public void IntersectWith
-            (IEnumerable<T> other)
-        {
-            Source = Source.Intersect(other);
-        }
-
-        public void ExceptWith
-            (IEnumerable<T> other)
-        {
-            Source = Source.Except(other);
-        }
-
-        public void SymmetricExceptWith
-            (IEnumerable<T> other)
-        {
-            Source = Source.SymmetricExcept(other);
-        }
-
-        public bool IsSubsetOf
-            (IEnumerable<T> other)
-        {
-            return Source.IsSubsetOf(other);
-        }
-
-        public bool IsSupersetOf
-            (IEnumerable<T> other)
-        {
-            return Source.IsSupersetOf(other);
-        }
-
-        public bool IsProperSupersetOf
-            (IEnumerable<T> other)
-        {
-            return Source.IsProperSupersetOf(other);
-        }
-
-        public bool IsProperSubsetOf
-            (IEnumerable<T> other)
-        {
-            return Source.IsProperSubsetOf(other);
-        }
-
-        public bool Overlaps
-            (IEnumerable<T> other)
-        {
-            return Source.Overlaps(other);
-        }
-
-        public bool SetEquals
-            (IEnumerable<T> other)
-        {
-            return Source.SetEquals(other);
-        }
-
-        public bool Add
-            (T item)
-        {
-            if (Source.Contains(item))
-                return false;
-            Source = Source.Add(item);
-            return true;
-        }
-        public void AddRange
-            (IEnumerable<T> item)
-        {
-            Source = Source.Union(item);
-        }
-
-        public void Clear()
-        {
-            Source = ImmutableHashSet<T>.Empty;
-        }
-
-        public bool Contains
-            (T item)
-        {
-            return Source.Contains(item);
-        }
-
-        public void CopyTo
-            (T[] array,
-             int arrayIndex)
-        {
-            Source.ToList().CopyTo(array, arrayIndex);
-        }
-
-        public bool Remove
-            (T item)
-        {
-            if (!Source.Contains(item))
-                return false;
-            Source = Source.Remove(item);
-            return true;
-        }
-
-        public int Count => Source.Count;
-
-        public bool IsReadOnly => true;
     }
 }

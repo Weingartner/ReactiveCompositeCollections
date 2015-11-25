@@ -59,7 +59,7 @@ namespace Weingartner.ReactiveCompositeCollections
             ) => m.Bind(x => f(x).Bind(y =>
                                        {
                                            var data = new CompositeSourceList<TResult>();
-                                           data.Add(g(x, y));
+                                           data.Source = data.Source.Add(g(x, y));
                                            return data;
                                        }));
         public static CompositeListSubscription<T> Subscribe<T>
@@ -123,7 +123,7 @@ namespace Weingartner.ReactiveCompositeCollections
     {
 
         private ImmutableList<T> _Source;
-        private ImmutableList<T> Source
+        public ImmutableList<T> Source
         {
             get { return _Source; }
             set { this.RaiseAndSetIfChanged(ref _Source, value); }
@@ -152,58 +152,6 @@ namespace Weingartner.ReactiveCompositeCollections
 
             return new CompositeSourceListSwitch<TB>(update);
         }
-
-        public void Add
-            (T item)
-        {
-            Source = Source.Add(item);
-        }
-
-        public void AddRange
-            (IEnumerable<T> item)
-        {
-            Source = Source.AddRange(item);
-        }
-
-        public void Clear()
-        {
-            Source = ImmutableList<T>.Empty;
-        }
-
-        public void Reset
-            (ImmutableList<T> values)
-        {
-            Source = values;
-        }
-        public void Reset
-            (IEnumerable<T> values)
-        {
-            Reset(values.ToImmutableList());
-        }
-
-        public bool Contains
-            (T item)
-        {
-            return Source.Contains(item);
-        }
-
-        public void CopyTo
-            (T[] array,
-             int arrayIndex)
-        {
-            Source.ToList().CopyTo(array, arrayIndex);
-        }
-
-        public bool Remove
-            (T item)
-        {
-            if (!Source.Contains(item))
-                return false;
-            Source = Source.Remove(item);
-            return true;
-        }
-
-        public int Count => Source.Count;
 
     }
 }
