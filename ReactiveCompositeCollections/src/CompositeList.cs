@@ -115,26 +115,26 @@ namespace Weingartner.ReactiveCompositeCollections
     public static class CompositeSourceListExtensions
     {
         public static void Add<T>
-            (CompositeSourceList<T> @this,
+            (this CompositeSourceList<T> @this,
              T value )
         {
             @this.Source = @this.Source.Add(value);
         }
         public static void AddRange<T>
-            (CompositeSourceList<T> @this,
+            (this CompositeSourceList<T> @this,
              IEnumerable<T> value )
         {
             @this.Source = @this.Source.AddRange(value);
         }
         public static void RemoveRange<T>
-            (CompositeSourceList<T> @this,
+            (this CompositeSourceList<T> @this,
              IEnumerable<T> value )
         {
             @this.Source = @this.Source.RemoveRange(value);
         }
 
         public static void Remove<T>
-            (CompositeSourceList<T> @this,
+            (this CompositeSourceList<T> @this,
              T value )
         {
             @this.Source = @this.Source.Remove(value);
