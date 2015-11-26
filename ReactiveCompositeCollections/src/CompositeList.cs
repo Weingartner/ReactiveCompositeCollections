@@ -143,6 +143,19 @@ namespace Weingartner.ReactiveCompositeCollections
         public static ICompositeList<T> Concat<T>
             (this ICompositeList<T> @this,
              ICompositeList<T> other) => new CompositeList<T>(@this, other);
+
+        public static ICompositeList<T> ToCompositeList<T>
+            (this IObservable<ICompositeList<T>> @this) => 
+            new CompositeSourceListSwitch<T>(@this);
+
+        public static ICompositeList<T> ToCompositeList<T>
+            (this IEnumerable<T> @this) => 
+            new CompositeSourceList<T>(@this);
+
+        public static ICompositeList<T> ToCompositeList<T>
+            (this IObservable<IEnumerable<T>> @this) => 
+            new CompositeSourceListSwitch<T>(@this.Select(s => s.ToCompositeList()));
+
     }
 
     public class CompositeSourceListSwitch<T> : ICompositeList<T>
