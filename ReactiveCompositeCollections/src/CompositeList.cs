@@ -301,8 +301,8 @@ namespace Weingartner.ReactiveCompositeCollections
             (Func<T, ICompositeList<TB>> f)
         {
             var r = _Source
-                .Select(s => (ICompositeList<T>) s.Bind(f));
-            return (ICompositeList<TB>) new CompositeSourceListSwitch<T>(r);
+                .Select(s => s.Bind(f));
+            return new CompositeSourceListSwitch<TB>(r);
         }
     }
 
