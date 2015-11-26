@@ -211,6 +211,48 @@ namespace Weingartner.ReactiveCompositeCollections
                 .Select(b => b[0].Except(b[1]).ToImmutableHashSet())
                 .Where(c=>c.Count>0);
         }
+
+        #region aggregation
+        public static IObservable<T> Aggregate<T>
+            (
+            this ICompositeList<T> source,
+            Func<T, T, T> aggregator) => source.Items.Select(items => items.Aggregate(aggregator));
+
+        public static IObservable<U> Aggregate<T,U>
+            (
+            this ICompositeList<T> source,
+            Func<U, T, U> aggregator, U init) => source.Items.Select(items => items.Aggregate(init, aggregator));
+
+        #region Sum
+        public static IObservable<double> Sum<T>
+            (
+            this ICompositeList<T> source,
+            Func<T,double> aggregator) => source.Items.Select(items => items.Sum( aggregator));
+
+        public static IObservable<int> Sum<T>
+            (
+            this ICompositeList<T> source,
+            Func<T,int> aggregator) => source.Items.Select(items => items.Sum( aggregator));
+
+        public static IObservable<float> Sum<T>
+            (
+            this ICompositeList<T> source,
+            Func<T,float> aggregator) => source.Items.Select(items => items.Sum( aggregator));
+        #endregion
+
+        #region maxmin
+        public static IObservable<float> Max<T>
+            (
+            this ICompositeList<T> source,
+            Func<T,float> aggregator) => source.Items.Select(items => items.Max( aggregator));
+        public static IObservable<T> Max<T> ( this ICompositeList<T> source ) => source.Items.Select(items => items.Max());
+        public static IObservable<float> Min<T>
+            (
+            this ICompositeList<T> source,
+            Func<T,float> aggregator) => source.Items.Select(items => items.Min( aggregator));
+        public static IObservable<T> Min<T> ( this ICompositeList<T> source ) => source.Items.Select(items => items.Min());
+        #endregion
+        #endregion
     }
 
     public class CompositeSourceListSwitch<T> : ICompositeList<T>
