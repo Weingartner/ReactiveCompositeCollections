@@ -223,6 +223,14 @@ namespace Weingartner.ReactiveCompositeCollections
             this ICompositeList<T> source,
             Func<U, T, U> aggregator, U init) => source.Items.Select(items => items.Aggregate(init, aggregator));
 
+        public static IObservable<bool> Any<T>
+            (this ICompositeList<T> source,
+             Func<T, bool> pred) => source.Items.Select(items => items.Any(pred));
+
+        public static IObservable<bool> All<T>
+            (this ICompositeList<T> source,
+             Func<T, bool> pred) => source.Items.Select(items => items.All(pred));
+
         #region Sum
         public static IObservable<double> Sum<T>
             (
