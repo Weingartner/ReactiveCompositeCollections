@@ -52,6 +52,12 @@ namespace Weingartner.ReactiveCompositeCollections
             , Func<TSource, ICompositeList<TResult>> f
             ) => m.Bind(f);
 
+        public static ICompositeList<TResult> SelectMany<TSource, TResult>
+            ( this ICompositeList<TSource> m
+            , Func<TSource, IEnumerable<TResult>> f
+            ) => m.Bind(v=>new CompositeSourceList<TResult>(f(v)));
+
+
         public static ICompositeList<TResult> SelectMany<TSource, TICompositeList, TResult>
             ( this ICompositeList<TSource> m
             , Func<TSource, ICompositeList<TICompositeList>> f
@@ -62,6 +68,18 @@ namespace Weingartner.ReactiveCompositeCollections
                                            data.Source = data.Source.Add(g(x, y));
                                            return data;
                                        }));
+
+        public static ICompositeList<TResult> SelectMany<TSource, TICompositeList, TResult>
+            ( this ICompositeList<TSource> m
+            , Func<TSource, IEnumerable<TICompositeList>> f
+            , Func<TSource, TICompositeList, TResult> g
+            ) => m.Bind(x => new CompositeSourceList<TICompositeList>( f(x)).Bind(y =>
+                                       {
+                                           var data = new CompositeSourceList<TResult>();
+                                           data.Source = data.Source.Add(g(x, y));
+                                           return data;
+                                       }));
+
         public static CompositeListSubscription<T> Subscribe<T>
             (this ICompositeList<T> @this) => new CompositeListSubscription<T>(@this);
     }
@@ -138,6 +156,10 @@ namespace Weingartner.ReactiveCompositeCollections
                 .RefCount();
         }
 
+        public CompositeSourceList(IEnumerable<T> initial) : this(initial.ToImmutableList())
+        {
+        }
+
         public IObservable<ImmutableList<T>> Items { get; }
 
 
@@ -152,6 +174,7 @@ namespace Weingartner.ReactiveCompositeCollections
 
             return new CompositeSourceListSwitch<TB>(update);
         }
+
 
     }
 }

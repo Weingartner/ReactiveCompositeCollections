@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using ReactiveUI;
 using Weingartner.ReactiveCompositeCollections;
@@ -30,6 +31,40 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 c.Source=c.Source.AddRange(new [] {5,6,8});
                 s.Items.Should().BeEquivalentTo(new[]{1,1,3,5,6,8});
             }
+        }
+
+        [Fact]
+        public void SelectManyWorkWithIEnumerable()
+        {
+            var a = new CompositeSourceList<IList<int>>();
+
+            var b = a.SelectMany(v => v);
+
+            using (var r = b.Subscribe())
+            {
+                r.Items.Count.Should().Be(0);
+                a.Source = a.Source.Add(new List<int> {1, 2, 3});
+                r.Items.Should().BeEquivalentTo(1, 2, 3);
+            }
+
+        }
+
+        [Fact]
+        public void SelectManyLinqWorkWithIEnumerable()
+        {
+            var a = new CompositeSourceList<IList<int>>();
+
+            var b = from v in a
+                    from q in v
+                    select q;
+
+            using (var r = b.Subscribe())
+            {
+                r.Items.Count.Should().Be(0);
+                a.Source = a.Source.Add(new List<int> {1, 2, 3});
+                r.Items.Should().BeEquivalentTo(1, 2, 3);
+            }
+
         }
 
         [Fact]
