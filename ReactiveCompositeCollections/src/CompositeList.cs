@@ -16,7 +16,9 @@ namespace Weingartner.ReactiveCompositeCollections
 
         public CompositeListSubscription(ICompositeList<T> list )
         {
-            _Items = list.Items.ToProperty(this, p => p.Items);
+            _Items = list.Items
+                .Where(v=>v!=null)
+                .ToProperty(this, p => p.Items, ImmutableList<T>.Empty );
         }
 
         public void Dispose()
