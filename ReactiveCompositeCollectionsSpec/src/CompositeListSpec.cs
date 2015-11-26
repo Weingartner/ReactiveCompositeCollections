@@ -114,7 +114,11 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
         {
             var a = new CompositeSourceList<CompositeSourceList<int>>();
 
-            var b = a.Where(clist => clist.Any(v => v > 10));
+            // Note that clist.Any(v => v>10) returns IObservable<bool>
+
+            var b = from clist in a
+                    where clist.Any(v => v > 10)
+                    select clist;
 
             using (var s = b.Subscribe())
             {

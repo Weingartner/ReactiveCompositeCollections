@@ -306,8 +306,16 @@ namespace Weingartner.ReactiveCompositeCollections
         }
     }
 
+    public interface ICompositeReadOnlySourceList<T> : ICompositeList<T>
+    {
+        /// <summary>
+        /// Get the source object
+        /// </summary>
+        ImmutableList<T> Source { get; }
+    }
 
-    public class CompositeSourceList<T> : ReactiveObject,  ICompositeList<T>
+
+    public class CompositeSourceList<T> : ReactiveObject,  ICompositeReadOnlySourceList<T>
     {
 
         private ImmutableList<T> _Source;

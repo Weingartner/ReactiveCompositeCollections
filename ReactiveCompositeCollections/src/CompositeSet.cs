@@ -95,6 +95,13 @@ namespace Weingartner.ReactiveCompositeCollections
         }
 
     }
+    public interface ICompositeReadOnlySourceSet<T> : ICompositeSet<T>
+    {
+        /// <summary>
+        /// Get the source object
+        /// </summary>
+        ImmutableHashSet<T> Source { get; }
+    }
 
     public class CompositeSourceSetSwitch<T> : ICompositeSet<T>
     {
@@ -122,7 +129,7 @@ namespace Weingartner.ReactiveCompositeCollections
     }
 
 
-    public class CompositeSourceSet<T> : ReactiveObject,  ICompositeSet<T>
+    public class CompositeSourceSet<T> : ReactiveObject,  ICompositeReadOnlySourceSet<T>
     {
 
         private ImmutableHashSet<T> _Source;
