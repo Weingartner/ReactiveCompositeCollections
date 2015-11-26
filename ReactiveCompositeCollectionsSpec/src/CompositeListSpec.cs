@@ -90,6 +90,26 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
         }
 
         [Fact]
+        public void WhereShouldWork()
+        {
+            var a = new CompositeSourceList<int>();
+            var b = new CompositeSourceList<int>();
+            var c = a.Concat(b).Where(v=>v>5);
+
+            using (var r = c.Subscribe())
+            {
+                r.Items.Count.Should().Be(0);
+                a.AddRange(new List<int> {1,2,3});
+                r.Items.Should().BeEquivalentTo();
+                b.AddRange(new List<int> {5,6,7});
+                r.Items.Should().BeEquivalentTo(6,7);
+                a.Source = ImmutableList<int>.Empty;
+                r.Items.Should().BeEquivalentTo(6,7);
+            }
+            
+        }
+
+        [Fact]
         public void AutomaticallyNestingUsingLinq()
         {
             var a = new CompositeSourceList<CompositeSourceList<int>>();

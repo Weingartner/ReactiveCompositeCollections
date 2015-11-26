@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -156,6 +157,9 @@ namespace Weingartner.ReactiveCompositeCollections
             (this IObservable<IEnumerable<T>> @this) => 
             new CompositeSourceListSwitch<T>(@this.Select(s => s.ToCompositeList()));
 
+        public static ICompositeList<T> Where<T>
+            (this ICompositeList<T> @this, Func<T,bool>predicate ) => 
+            @this.SelectMany(v => predicate(v) ? new[] {v}: new T[] {});
     }
 
     public class CompositeSourceListSwitch<T> : ICompositeList<T>
