@@ -110,6 +110,37 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
         }
 
         [Fact]
+        public void AddedObservableShouldWork()
+        {
+            var a = new CompositeSourceList<int>();
+            var b = new CompositeSourceList<int>();
+            var c = a.Concat(b);
+
+            var addedResult = new List<IReadOnlyCollection<int>>();
+            var removedResult = new List<IReadOnlyCollection<int>>();
+
+            c.AddedToSetObservable().Subscribe(added => addedResult.Add(added));
+            c.RemovedFromSetObservable().Subscribe(removed => removedResult.Add(removed));
+
+            a.AddRange(new [] {1,2});
+            b.AddRange(new [] {8,2});
+
+            b.Remove(8);
+            a.Remove(2); // Doesn't cause a remove event as 2 belongs to both sources
+            a.Remove(1);
+
+            addedResult[0].Should().BeEquivalentTo(1, 2);
+            addedResult[1].Should().BeEquivalentTo(8);
+
+            removedResult[0].Should().BeEquivalentTo(8);
+            removedResult[1].Should().BeEquivalentTo(1);
+
+
+
+
+        }
+
+        [Fact]
         public void AutomaticallyNestingUsingLinq()
         {
             var a = new CompositeSourceList<CompositeSourceList<int>>();

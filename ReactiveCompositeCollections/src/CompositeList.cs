@@ -1,9 +1,9 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
+using DiffLib;
 using ReactiveUI;
 
 namespace Weingartner.ReactiveCompositeCollections
@@ -160,6 +160,57 @@ namespace Weingartner.ReactiveCompositeCollections
         public static ICompositeList<T> Where<T>
             (this ICompositeList<T> @this, Func<T,bool>predicate ) => 
             @this.SelectMany(v => predicate(v) ? new[] {v}: new T[] {});
+
+        public static IObservable<List<DiffElement<T>>> ChangesObservable<T>(this ICompositeList<T> source, IEqualityComparer<T>comparer = null  )
+        {
+            return source
+                .Items
+                .StartWith(ImmutableList<T>.Empty)
+                .Buffer(2, 1).Where(b => b.Count == 2)
+                .Select(b =>
+                        {
+                            var sections = Diff.CalculateSections(b[0], b[1], comparer);
+                            var alignment = Diff.AlignElements
+                                (b[0], b[1], sections, new BasicReplaceInsertDeleteDiffElementAligner<T>());
+                            return alignment.ToList();
+                        });
+        } 
+
+        /// <summary>
+        /// Generates an observable for items added to the list. Note
+        /// that duplicates are ignored
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IObservable<ImmutableHashSet<T>> AddedToSetObservable<T>
+            (this ICompositeList<T> source)
+        {
+            return source
+                .Items
+                .StartWith(ImmutableList<T>.Empty)
+                .Buffer(2, 1).Where(b => b.Count == 2)
+                .Select(b => b[1].Except(b[0]).ToImmutableHashSet())
+                .Where(c=>c.Count>0);
+        }
+
+        /// <summary>
+        /// Generates an observable for items removed from the list. Note
+        /// that duplicates are ignored.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IObservable<ImmutableHashSet<T>> RemovedFromSetObservable<T>
+            (this ICompositeList<T> source)
+        {
+            return source
+                .Items
+                .StartWith(ImmutableList<T>.Empty)
+                .Buffer(2, 1).Where(b => b.Count == 2)
+                .Select(b => b[0].Except(b[1]).ToImmutableHashSet())
+                .Where(c=>c.Count>0);
+        }
     }
 
     public class CompositeSourceListSwitch<T> : ICompositeList<T>
