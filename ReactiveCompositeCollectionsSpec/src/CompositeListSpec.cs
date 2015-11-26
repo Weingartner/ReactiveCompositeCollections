@@ -110,6 +110,36 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
         }
 
         [Fact]
+        public void WhereManyShouldWork()
+        {
+            var a = new CompositeSourceList<CompositeSourceList<int>>();
+
+            var b = a.Where(clist => clist.Any(v => v > 10));
+
+            using (var s = b.Subscribe())
+            {
+                var x = new CompositeSourceList<int>();
+                var y = new CompositeSourceList<int>();
+                a.Add(x);
+                a.Add(y);
+                s.Items.Count.Should().Be(0);
+                x.Add(9);
+                s.Items.Count.Should().Be(0);
+                x.Add(11);
+                s.Items.Count.Should().Be(1);
+                y.Add(12);
+                s.Items.Count.Should().Be(2);
+                x.Remove(11);
+                s.Items.Count.Should().Be(1);
+                x.Remove(9);
+                s.Items.Count.Should().Be(1);
+                y.Remove(12);
+                s.Items.Count.Should().Be(0);
+            }
+
+        }
+
+        [Fact]
         public void AddedObservableShouldWork()
         {
             var a = new CompositeSourceList<int>();

@@ -161,6 +161,25 @@ namespace Weingartner.ReactiveCompositeCollections
             (this ICompositeList<T> @this, Func<T,bool>predicate ) => 
             @this.SelectMany(v => predicate(v) ? new[] {v}: new T[] {});
 
+        /// <summary>
+        /// A version of 'Where' where the predicate is allowed to return an
+        /// IObservable of bool.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="@this"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static ICompositeList<T> Where<T>
+            (this ICompositeList<T> @this, Func<T,IObservable<bool>> predicate ) => 
+
+            @this
+                .SelectMany
+                    ( item=>
+                        predicate(item)
+                            .Select(r=>r ? new [] {item} : new T [] {})
+                            .ToCompositeList()
+                    );
+
         public static IObservable<List<DiffElement<T>>> ChangesObservable<T>(this ICompositeList<T> source, IEqualityComparer<T>comparer = null  )
         {
             return source
