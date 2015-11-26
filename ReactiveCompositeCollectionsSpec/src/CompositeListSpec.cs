@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using FluentAssertions;
 using ReactiveUI;
 using Weingartner.ReactiveCompositeCollections;
@@ -63,6 +64,27 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 r.Items.Count.Should().Be(0);
                 a.Source = a.Source.Add(new List<int> {1, 2, 3});
                 r.Items.Should().BeEquivalentTo(1, 2, 3);
+            }
+
+        }
+
+        [Fact]
+        public void ShouldBeAbleToConcatLists()
+        {
+
+            var a = new CompositeSourceList<int>();
+            var b = new CompositeSourceList<int>();
+            var c = a.Concat(b);
+
+            using (var r = c.Subscribe())
+            {
+                r.Items.Count.Should().Be(0);
+                a.AddRange(new List<int> {1,2,3});
+                r.Items.Should().BeEquivalentTo(1, 2, 3);
+                b.AddRange(new List<int> {5,6,7});
+                r.Items.Should().BeEquivalentTo(1, 2, 3,5,6,7);
+                a.Source = ImmutableList<int>.Empty;
+                r.Items.Should().BeEquivalentTo(5,6,7);
             }
 
         }

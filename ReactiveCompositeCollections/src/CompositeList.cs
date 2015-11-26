@@ -139,7 +139,10 @@ namespace Weingartner.ReactiveCompositeCollections
         {
             @this.Source = @this.Source.Remove(value);
         }
-        
+
+        public static ICompositeList<T> Concat<T>
+            (this ICompositeList<T> @this,
+             ICompositeList<T> other) => new CompositeList<T>(@this, other);
     }
 
     public class CompositeSourceListSwitch<T> : ICompositeList<T>
