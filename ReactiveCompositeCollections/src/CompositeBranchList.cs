@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.CompilerServices;
 using DiffLib;
 using ReactiveUI;
+using Weingartner.ReactiveCompositeCollections.Annotations;
 
 namespace Weingartner.ReactiveCompositeCollections
 {
@@ -101,13 +104,13 @@ namespace Weingartner.ReactiveCompositeCollections
         {
 
             var update = Items
-                .Select(items => items.Select(v=>f(v).Items))
-                .Select(items=>
+                .Select(items0 =>
                         {
+                            var items = items0.Select(v => f(v).Items);
                             if (!items.Any())
                                 return Observable.Return(ImmutableList<TB>.Empty);
 
-                            return items.CombineLatest().Select
+                            return items.CombineLatest
                                 (list =>
                                  {
                                      var builder = ImmutableList<TB>.Empty.ToBuilder();
@@ -308,7 +311,7 @@ namespace Weingartner.ReactiveCompositeCollections
     }
 
 
-    public class CompositeSourceList<T> : ReactiveObject, ICompositeReadOnlySourceList<T>
+    public class CompositeSourceList<T> : INotifyPropertyChanged, ICompositeReadOnlySourceList<T>
     {
 
         private ImmutableList<T> _Source;
@@ -316,13 +319,24 @@ namespace Weingartner.ReactiveCompositeCollections
         public ImmutableList<T> Source
         {
             get { return _Source; }
-            set { this.RaiseAndSetIfChanged(ref _Source, value); }
+            set
+            {
+                if (_Source == value)
+                    return;
+                _Source = value;
+                OnPropertyChanged();
+                _SourceObserver.OnNext(value);
+            }
         }
+
+        private readonly BehaviorSubject<ImmutableList<T>> _SourceObserver; 
+
 
         public CompositeSourceList(ImmutableList<T> initial = null) 
         {
+            _SourceObserver = new BehaviorSubject<ImmutableList<T>>(initial);
             Source = initial ?? ImmutableList<T>.Empty;
-            _Bridge = new CompositeList<T>(this.WhenAnyValue(p=>p.Source));
+            _Bridge = new CompositeList<T>(_SourceObserver);
             Items = _Bridge.Items;
         }
 
@@ -334,5 +348,13 @@ namespace Weingartner.ReactiveCompositeCollections
 
 
         public ICompositeList<TB> Bind<TB>(Func<T, ICompositeList<TB>> f) => _Bridge.Bind(f);
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged
+            ([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Security.Cryptography;
 using FluentAssertions;
 using ReactiveUI;
 using Weingartner.ReactiveCompositeCollections;
@@ -107,6 +108,39 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 r.Items.Should().BeEquivalentTo(6,7);
             }
             
+        }
+
+        [Fact]
+        public void WhereShouldBePerformant()
+        {
+            var a = new CompositeSourceList<CompositeSourceList<CompositeSourceList<int>>>();
+
+            // Note that clist.Any(v => v>10) returns IObservable<bool>
+
+            var b = a.SelectMany
+                (clist => clist, (clist,
+                                  xlist) => new {clist, xlist})
+                     .Where(@t => @t.xlist.Any(v => v > 10))
+                     .SelectMany(@t => @t.xlist);
+
+            using (var s = b.Subscribe())
+            {
+                var x = new CompositeSourceList<CompositeSourceList<int>>();
+                var y = new CompositeSourceList<CompositeSourceList<int>>();
+                a.Add(x);
+                a.Add(y);
+                var xx = new CompositeSourceList<int>();
+                var yy = new CompositeSourceList<int>();
+                x.Add(xx);
+                y.Add(yy);
+                for (int i = 0; i < 10000; i++)
+                {
+                    xx.Add(i);
+                    yy.Add(i+1);
+                }
+                s.Items.Count.Should().BeGreaterThan(0);
+            }
+
         }
 
         [Fact]
