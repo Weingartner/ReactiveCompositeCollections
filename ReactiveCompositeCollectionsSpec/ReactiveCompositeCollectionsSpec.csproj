@@ -109,7 +109,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="src\CompositeListSpec.cs" />
+    <Compile Include="src\CompositeBranchListSpec.cs" />
     <Compile Include="src\CompositeSetSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

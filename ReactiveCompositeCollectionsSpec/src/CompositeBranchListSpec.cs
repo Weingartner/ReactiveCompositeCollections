@@ -17,8 +17,8 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             var b = new CompositeSourceList<int>();
             var c = new CompositeSourceList<int>();
 
-            var x = new CompositeList<int>(a,b);
-            var y = new CompositeList<int>(x,c);
+            var x = a.Concat(b);
+            var y = x.Concat(c);
 
             using (var s = y.Subscribe())
             {
@@ -245,7 +245,7 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             }
 
             // 6 changes should be recorded
-            count.Should().Be(6);
+            count.Should().Be(5);
         }
     }
 }

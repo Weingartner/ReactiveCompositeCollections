@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using DiffLib;
 using ReactiveUI;
 
@@ -46,7 +47,7 @@ namespace Weingartner.ReactiveCompositeCollections
                 .Items
                 .Select(p => p.Select(f).ToImmutableList())
                 .Select(p => new CompositeSourceList<TResult>(p));
-            return new CompositeSourceListSwitch<TResult>(r);
+            return r.ToCompositeList();
         }
 
 
@@ -89,30 +90,40 @@ namespace Weingartner.ReactiveCompositeCollections
 
     public class CompositeList<T> : ICompositeList<T>
     {
-        readonly ICompositeList<T> _Left;
-        readonly ICompositeList<T> _Right;
-
-        public CompositeList(ICompositeList<T> left,
-                            ICompositeList<T> right)
+        public CompositeList(IObservable<ImmutableList<T>> source )
         {
-            _Left = left;
-            _Right = right;
-            Items = _Left.Items.CombineLatest
-                (_Right.Items, (a,
-                                b) => a.AddRange(b))
-                                .Replay(1)
-                                .RefCount();
+            Items = source;
         }
 
-        public IObservable<ImmutableList<T>> Items { get; }
+        public IObservable<ImmutableList<T>> Items { get;  }
 
-        public ICompositeList<TB> Bind<TB>(Func<T, ICompositeList<TB>> f)
+         public ICompositeList<TB> Bind<TB>(Func<T, ICompositeList<TB>> f)
         {
-            var left = _Left.Bind(f);
-            var right = _Right.Bind(f);
-            return new CompositeList<TB>(left, right);
-        }
 
+            var update = Items
+                .Select(items => items.Select(v=>f(v).Items))
+                .Select(items=>
+                        {
+                            if (!items.Any())
+                                return Observable.Return(ImmutableList<TB>.Empty);
+
+                            return items.CombineLatest().Select
+                                (list =>
+                                 {
+                                     var builder = ImmutableList<TB>.Empty.ToBuilder();
+                                     for (int index = 0; index < list.Count; index++)
+                                     {
+                                         var l = list[index];
+                                         builder.AddRange(l);
+                                     }
+                                     return builder.ToImmutable();
+                                 });
+                        })
+                .Switch();
+
+            return new CompositeList<TB>(update);
+
+        }      
     }
 
     public static class CompositeSourceListExtensions
@@ -145,11 +156,11 @@ namespace Weingartner.ReactiveCompositeCollections
 
         public static ICompositeList<T> Concat<T>
             (this ICompositeList<T> @this,
-             ICompositeList<T> other) => new CompositeList<T>(@this, other);
+             ICompositeList<T> other) => @this.Items.CombineLatest(other.Items,(a,b)=>a.Concat(b)).ToCompositeList();
 
         public static ICompositeList<T> ToCompositeList<T>
-            (this IObservable<ICompositeList<T>> @this) => 
-            new CompositeSourceListSwitch<T>(@this);
+            (this IObservable<ICompositeList<T>> @this) =>
+                new CompositeList<T>(@this.Select(list => list.Items).Switch()); 
 
         public static ICompositeList<T> ToCompositeList<T>
             (this IEnumerable<T> @this) => 
@@ -157,7 +168,11 @@ namespace Weingartner.ReactiveCompositeCollections
 
         public static ICompositeList<T> ToCompositeList<T>
             (this IObservable<IEnumerable<T>> @this) => 
-            new CompositeSourceListSwitch<T>(@this.Select(s => s.ToCompositeList()));
+            new CompositeList<T>(@this.Select(t=>t.ToImmutableList())); 
+
+        public static ICompositeList<T> ToCompositeList<T>
+            (this IObservable<ImmutableList<T>> @this) => 
+            new CompositeList<T>(@this); 
 
         public static ICompositeList<T> Where<T>
             (this ICompositeList<T> @this, Func<T,bool>predicate ) => 
@@ -284,30 +299,6 @@ namespace Weingartner.ReactiveCompositeCollections
         #endregion
     }
 
-    public class CompositeSourceListSwitch<T> : ICompositeList<T>
-    {
-        readonly IObservable<ICompositeList<T>> _Source;
-
-        public CompositeSourceListSwitch(IObservable<ICompositeList<T>> source)
-        {
-            _Source = source;
-            Items = _Source.Select(s => s.Items)
-                .Switch()
-                .Replay(1)
-                .RefCount();
-        }
-
-        public IObservable<ImmutableList<T>> Items { get; }
-
-        public ICompositeList<TB> Bind<TB>
-            (Func<T, ICompositeList<TB>> f)
-        {
-            var r = _Source
-                .Select(s => s.Bind(f));
-            return new CompositeSourceListSwitch<TB>(r);
-        }
-    }
-
     public interface ICompositeReadOnlySourceList<T> : ICompositeList<T>
     {
         /// <summary>
@@ -317,23 +308,22 @@ namespace Weingartner.ReactiveCompositeCollections
     }
 
 
-    public class CompositeSourceList<T> : ReactiveObject,  ICompositeReadOnlySourceList<T>
+    public class CompositeSourceList<T> : ReactiveObject, ICompositeReadOnlySourceList<T>
     {
 
         private ImmutableList<T> _Source;
+        private readonly CompositeList<T> _Bridge; 
         public ImmutableList<T> Source
         {
             get { return _Source; }
             set { this.RaiseAndSetIfChanged(ref _Source, value); }
         }
 
-        public CompositeSourceList(ImmutableList<T> initial = null)
+        public CompositeSourceList(ImmutableList<T> initial = null) 
         {
             Source = initial ?? ImmutableList<T>.Empty;
-            Items = this
-                .WhenAnyValue(p => p.Source)
-                .Replay(1)
-                .RefCount();
+            _Bridge = new CompositeList<T>(this.WhenAnyValue(p=>p.Source));
+            Items = _Bridge.Items;
         }
 
         public CompositeSourceList(IEnumerable<T> initial) : this(initial.ToImmutableList())
@@ -343,18 +333,6 @@ namespace Weingartner.ReactiveCompositeCollections
         public IObservable<ImmutableList<T>> Items { get; }
 
 
-        public ICompositeList<TB> Bind<TB>(Func<T, ICompositeList<TB>> f)
-        {
-
-            var update = Items
-                .Select
-                (s => s.Count > 0 
-                ? s.Select(f).Aggregate ((a, b) => new CompositeList<TB>(a, b))
-                            : new CompositeSourceList<TB>());
-
-            return new CompositeSourceListSwitch<TB>(update);
-        }
-
-
+        public ICompositeList<TB> Bind<TB>(Func<T, ICompositeList<TB>> f) => _Bridge.Bind(f);
     }
 }
