@@ -120,7 +120,7 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             var b = from clist in a
                     from t in clist
                     where t.Any(v => v > 10)
-                    select t;
+                    select t.Select(v=>v+1);
 
             using (var s = b.Subscribe())
             {
