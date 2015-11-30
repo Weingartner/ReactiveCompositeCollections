@@ -117,11 +117,10 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
 
             // Note that clist.Any(v => v>10) returns IObservable<bool>
 
-            var b = a.SelectMany
-                (clist => clist, (clist,
-                                  xlist) => new {clist, xlist})
-                     .Where(@t => @t.xlist.Any(v => v > 10))
-                     .SelectMany(@t => @t.xlist);
+            var b = from clist in a
+                    from t in clist
+                    where t.Any(v => v > 10)
+                    select t;
 
             using (var s = b.Subscribe())
             {
@@ -133,7 +132,7 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 var yy = new CompositeSourceList<int>();
                 x.Add(xx);
                 y.Add(yy);
-                for (int i = 0; i < 10000; i++)
+                for (int i = 0; i < 100000; i++)
                 {
                     xx.Add(i);
                     yy.Add(i+1);

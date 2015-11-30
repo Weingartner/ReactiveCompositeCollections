@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
@@ -12,22 +13,42 @@ using Weingartner.ReactiveCompositeCollections.Annotations;
 
 namespace Weingartner.ReactiveCompositeCollections
 {
-    public class CompositeListSubscription<T> : ReactiveObject, IDisposable
+    public class CompositeListSubscription<T> : INotifyPropertyChanged, IDisposable
     {
-        readonly ObservableAsPropertyHelper<ImmutableList<T>> _Items;
 
-        public ImmutableList<T> Items => _Items.Value;
+        public ImmutableList<T> _Items = ImmutableList<T>.Empty;
+        private IDisposable _Subscription;
+
+        public ImmutableList<T> Items
+        {
+            get { return _Items; }
+            set
+            {
+                if(_Items!=value)
+                    OnPropertyChanged();
+                _Items = value;
+            }
+        }
 
         public CompositeListSubscription(ICompositeList<T> list )
         {
-            _Items = list.Items
+            _Subscription = list.Items
                 .Where(v=>v!=null)
-                .ToProperty(this, p => p.Items, ImmutableList<T>.Empty );
+                .Subscribe(v=>Items=v);
         }
 
         public void Dispose()
         {
-            _Items.Dispose();
+            _Subscription.Dispose();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged
+            ([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
@@ -37,6 +58,7 @@ namespace Weingartner.ReactiveCompositeCollections
 
         ICompositeList<TB> Bind<TB>(Func<T, ICompositeList<TB>> f);
     }
+
 
     public static class CompositeListExtensions
     {
@@ -49,7 +71,7 @@ namespace Weingartner.ReactiveCompositeCollections
             var r = m
                 .Items
                 .Select(p => p.Select(f).ToImmutableList())
-                .Select(p => new CompositeSourceList<TResult>(p));
+                .Select(p => new CompositeList<TResult>(Observable.Return(p, Scheduler.Immediate)));
             return r.ToCompositeList();
         }
 
@@ -62,30 +84,20 @@ namespace Weingartner.ReactiveCompositeCollections
         public static ICompositeList<TResult> SelectMany<TSource, TResult>
             ( this ICompositeList<TSource> m
             , Func<TSource, IEnumerable<TResult>> f
-            ) => m.Bind(v=>new CompositeSourceList<TResult>(f(v)));
+            ) => m.Bind(v=>new CompositeList<TResult>(f(v)));
 
 
         public static ICompositeList<TResult> SelectMany<TSource, TICompositeList, TResult>
             ( this ICompositeList<TSource> m
             , Func<TSource, ICompositeList<TICompositeList>> f
             , Func<TSource, TICompositeList, TResult> g
-            ) => m.Bind(x => f(x).Bind(y =>
-                                       {
-                                           var data = new CompositeSourceList<TResult>();
-                                           data.Source = data.Source.Add(g(x, y));
-                                           return data;
-                                       }));
+            ) => m.Bind(x => f(x).Bind(y => new CompositeList<TResult>(g(x,y))));
 
         public static ICompositeList<TResult> SelectMany<TSource, TICompositeList, TResult>
             ( this ICompositeList<TSource> m
             , Func<TSource, IEnumerable<TICompositeList>> f
             , Func<TSource, TICompositeList, TResult> g
-            ) => m.Bind(x => new CompositeSourceList<TICompositeList>( f(x)).Bind(y =>
-                                       {
-                                           var data = new CompositeSourceList<TResult>();
-                                           data.Source = data.Source.Add(g(x, y));
-                                           return data;
-                                       }));
+            ) => m.Bind(x => new CompositeList<TICompositeList>(f(x)).Bind(y => new CompositeList<TResult>(g(x, y))));
 
         public static CompositeListSubscription<T> Subscribe<T>
             (this ICompositeList<T> @this) => new CompositeListSubscription<T>(@this);
@@ -98,6 +110,13 @@ namespace Weingartner.ReactiveCompositeCollections
             Items = source;
         }
 
+        public CompositeList(ImmutableList<T> source) : this(Observable.Return(source, Scheduler.Immediate)) { }
+        public CompositeList(IEnumerable<T> source) : this(Observable.Return(source.ToImmutableList(), Scheduler.Immediate)) { }
+
+        public CompositeList(T source) : this(ImmutableList.Create(source))
+        {
+        }
+
         public IObservable<ImmutableList<T>> Items { get;  }
 
          public ICompositeList<TB> Bind<TB>(Func<T, ICompositeList<TB>> f)
@@ -108,7 +127,7 @@ namespace Weingartner.ReactiveCompositeCollections
                         {
                             var items = items0.Select(v => f(v).Items);
                             if (!items.Any())
-                                return Observable.Return(ImmutableList<TB>.Empty);
+                                return Observable.Return(ImmutableList<TB>.Empty, Scheduler.Immediate);
 
                             return items.CombineLatest
                                 (list =>
