@@ -16,7 +16,7 @@ namespace Weingartner.ReactiveCompositeCollections
     public class CompositeListSubscription<T> : INotifyPropertyChanged, IDisposable
     {
 
-        public ImmutableList<T> _Items = ImmutableList<T>.Empty;
+        private ImmutableList<T> _Items = ImmutableList<T>.Empty;
         private IDisposable _Subscription;
 
         public ImmutableList<T> Items
@@ -35,6 +35,7 @@ namespace Weingartner.ReactiveCompositeCollections
             _Subscription = list.Items
                 .Where(v=>v!=null)
                 .Subscribe(v=>Items=v);
+
         }
 
         public void Dispose()
@@ -129,17 +130,13 @@ namespace Weingartner.ReactiveCompositeCollections
                             if (!items.Any())
                                 return Observable.Return(ImmutableList<TB>.Empty, Scheduler.Immediate);
 
+                            // We use Aggregate here because internally AddRange checks to
+                            // see if the passed in Enumerable is an ImmutableList and then
+                            // performs an optimisation.
                             return items.CombineLatest
-                                (list =>
-                                 {
-                                     var builder = ImmutableList<TB>.Empty.ToBuilder();
-                                     for (int index = 0; index < list.Count; index++)
-                                     {
-                                         var l = list[index];
-                                         builder.AddRange(l);
-                                     }
-                                     return builder.ToImmutable();
-                                 });
+                                (list => list.Aggregate
+                                             (ImmutableList<TB>.Empty, (a,
+                                                                        b) => a.AddRange(b)));
                         })
                 .Switch();
 
