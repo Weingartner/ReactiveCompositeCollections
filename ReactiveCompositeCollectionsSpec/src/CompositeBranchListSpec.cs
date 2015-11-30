@@ -263,7 +263,7 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
 
             using (var s = e.Subscribe())
             {
-                s.WhenAnyValue(p => p.Items).Subscribe(_ => count++);
+                s.PropertyChanged += (_,__)=>count++;
                 s.Items.Should().BeEquivalentTo("1x", "2x");
                 a.Source=a.Source.Remove(bt);
                 s.Items.Should().BeEquivalentTo();
@@ -278,7 +278,7 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             }
 
             // 6 changes should be recorded
-            count.Should().Be(5);
+            count.Should().Be(4);
         }
     }
 }
