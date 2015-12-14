@@ -173,6 +173,11 @@ namespace Weingartner.ReactiveCompositeCollections
             @this.Source = @this.Source.Remove(value);
         }
 
+        public static IDisposable Bind<T>
+            (this ICompositeList<T> @this,
+             CompositeSourceList<T> target) =>
+            @this.Items.Subscribe(items => target.Source = items);
+
         public static ICompositeList<T> Concat<T>
             (this ICompositeList<T> @this,
              ICompositeList<T> other) => @this.Items.CombineLatest(other.Items,(a,b)=>a.Concat(b)).ToCompositeList();

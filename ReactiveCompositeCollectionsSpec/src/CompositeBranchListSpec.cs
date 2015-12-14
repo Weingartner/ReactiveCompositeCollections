@@ -280,5 +280,17 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             // 6 changes should be recorded
             count.Should().Be(4);
         }
+        [Fact]
+        public void BindingShouldWork()
+        {
+            var a = new CompositeSourceList<int>();
+            var b = new CompositeSourceList<int>();
+            var c = new CompositeSourceList<int>();
+
+            var d = b.Concat(c);
+
+            d.Bind(a);
+        }
+
     }
 }
