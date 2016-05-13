@@ -153,6 +153,40 @@ namespace Weingartner.ReactiveCompositeCollections
         {
             @this.Source = @this.Source.Add(value);
         }
+
+        /// <summary>
+        /// Replaces the first equal element
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="this"></param>
+        /// <param name="oldValue"></param>
+        /// <param name="newValue"></param>
+        public static void Replace<T>
+            (this CompositeSourceList<T> @this,
+             T oldValue, T newValue )
+        {
+            @this.Source = @this.Source.Replace(oldValue, newValue);
+        }
+
+        public static void ReplaceAt<T>
+            (this CompositeSourceList<T> @this,
+             int i, T newValue )
+        {
+            @this.Source = @this.Source.SetItem(i, newValue);
+        }
+        public static void InsertAt<T>
+            (this CompositeSourceList<T> @this,
+             int i, T newValue )
+        {
+            @this.Source = @this.Source.Insert(i, newValue);
+        }
+        public static void InsertRangeAt<T>
+            (this CompositeSourceList<T> @this,
+             int i, IEnumerable<T> newValue )
+        {
+            @this.Source = @this.Source.InsertRange(i, newValue);
+        }
+
         public static void AddRange<T>
             (this CompositeSourceList<T> @this,
              IEnumerable<T> value )

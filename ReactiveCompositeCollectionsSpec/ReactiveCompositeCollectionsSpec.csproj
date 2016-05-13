@@ -112,6 +112,7 @@
     <Compile Include="src\CompositeBranchListSpec.cs" />
     <Compile Include="src\CompositeSetSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\ObservableCollectionSpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
