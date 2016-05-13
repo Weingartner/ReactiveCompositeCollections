@@ -1,4 +1,4 @@
-# ReactiveCompositeCollections
+# ReactiveCompositeCollections [![NuGet](https://img.shields.io/nuget/v/ReactiveCompositeCollections.svg?maxAge=2592000)]()
 A .Net library for composing reactive collections providing monadic types to support LINQ.
 
 ## Motivation 
@@ -26,5 +26,3 @@ the lines in the heirarchy as a flat reactive object
     using(var s = allLines.Subscribe()){
        RenderLines(s.Items);
     }
-
-[![weingartner MyGet Build Status](https://www.myget.org/BuildSource/Badge/weingartner?identifier=3fb3192a-514c-4938-9f92-953bac5a3ea4)](https://www.myget.org/)
