@@ -9,7 +9,7 @@
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
     <projectUrl>https://github.com/Weingartner/ReactiveCompositeCollections</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>A .Net library for composing reactive collections.</description>
+    <description>A .Net library for composing reactive collections providing monadic types to support LINQ.</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>Collection, Reactive, Monad, Linq</tags>
