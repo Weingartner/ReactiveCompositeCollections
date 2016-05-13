@@ -1,34 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
-    <metadata>
-        <id>ReactiveCompositeCollections</id>
-        <version>0.0.1</version>
-        <title>ReactiveCompositeCollections</title>
-        <authors>Brad Phelan</authors>
-        <owners>Weingartner Machinen Bau</owners>
-        <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
-        <projectUrl>https://github.com/Weingartner/ReactiveCompositeCollections</projectUrl>
-        <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
-        <requireLicenseAcceptance>true</requireLicenseAcceptance>
-        <description>A library for composing reactive collections using Linq operators</description>
-        <summary>A library for composing reactive collections using Linq operators</summary>
-        <releaseNotes />
-        <copyright>Weingartner 2015</copyright>
-        <language>en-US</language>
-        <tags>Weingartner</tags>
-        <dependencies>
-            <group>
-                <dependency id="log4net" version="1.2.10" />
-                <dependency id="reactiveui" version="6.5.0" />
-                <dependency id="System.Collections.Immutable" version="1.1.37" />
-            </group>
-        </dependencies>
-    </metadata>
-    <files>
-        <file src="bin\Release\ReactiveCompositeCollections.dll" target="lib\net40\ReactiveCompositeCollections.dll" />
-        <file src="bin\Release\ReactiveCompositeCollections.pdb" target="lib\net40\ReactiveCompositeCollections.pdb" />
-        <file src="tools\init.ps1" target="tools\init.ps1" />
-        <file src="tools\install.ps1" target="tools\install.ps1" />
-        <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
-    </files>
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/Weingartner/ReactiveCompositeCollections</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A .Net library for composing reactive collections.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>Collection, Reactive, Monad, Linq</tags>
+  </metadata>
 </package>
