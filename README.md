@@ -1,5 +1,5 @@
 # ReactiveCompositeCollections
-A .Net library for composing reactive collections.
+A .Net library for composing reactive collections providing monadic types to support LINQ.
 
 ## Motivation 
 We often have heirachical components that maintain collections of things. Imagine a collection of 3D objects that
