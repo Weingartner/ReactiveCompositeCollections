@@ -1,4 +1,4 @@
-# ReactiveCompositeCollections [![NuGet](https://img.shields.io/nuget/v/ReactiveCompositeCollections.svg?maxAge=2592000)]()
+# ReactiveCompositeCollections [![NuGet](https://img.shields.io/nuget/v/ReactiveCompositeCollections.svg?maxAge=2592000)](https://www.nuget.org/packages/ReactiveCompositeCollections/)
 A .Net library for composing reactive collections providing monadic types to support LINQ.
 
 ## Motivation 
