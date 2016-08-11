@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Reactive.Subjects;
 using System.Security.Cryptography;
 using FluentAssertions;
 using ReactiveUI;
@@ -109,6 +110,31 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             }
             
         }
+        [Fact]
+        public void DynamicWhereShouldWork()
+        {
+            var a = new CompositeSourceList<int>();
+            var b = new CompositeSourceList<int>();
+            var filter = new BehaviorSubject<Func<int,bool>>(v=>v>5);
+
+            var c = a.Concat(b).Where(filter);
+
+            using (var r = c.Subscribe())
+            {
+                r.Items.Count.Should().Be(0);
+                a.AddRange(new List<int> {1,2,3});
+                r.Items.Should().BeEquivalentTo();
+                b.AddRange(new List<int> {5,6,7});
+                r.Items.Should().BeEquivalentTo(6,7);
+            }
+
+            filter.OnNext(v=>true);
+            using (var r = c.Subscribe())
+            {
+                r.Items.Should().BeEquivalentTo(1, 2, 3, 5, 6, 7);
+            }            
+        }
+
 
         [Fact]
         public void WhereShouldBePerformant()

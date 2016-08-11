@@ -255,6 +255,15 @@ namespace Weingartner.ReactiveCompositeCollections
                             .ToCompositeList()
                     );
 
+        public static ICompositeList<T> Where<T>
+            (this ICompositeList<T> @this, IObservable<Func<T, bool>> predicateObservable)
+        {
+            return @this
+                .Items
+                .CombineLatest(predicateObservable, (items, predicate) => items.Where(predicate))
+                .ToCompositeList();
+        }
+
         public static IObservable<List<DiffElement<T>>> ChangesObservable<T>(this ICompositeList<T> source, IEqualityComparer<T>comparer = null  )
         {
             return source
