@@ -48,6 +48,7 @@ namespace Weingartner.ReactiveCompositeCollections
             , Func<TSource, ICompositeSet<TResult>> f
             ) => m.Bind(f);
 
+
         public static ICompositeSet<TResult> SelectMany<TSource, TICompositeSet, TResult>
             ( this ICompositeSet<TSource> m
             , Func<TSource, ICompositeSet<TICompositeSet>> f

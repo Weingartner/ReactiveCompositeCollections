@@ -77,6 +77,7 @@ namespace Weingartner.ReactiveCompositeCollections
         }
 
 
+
         public static ICompositeList<TResult> SelectMany<TSource, TResult>
             ( this ICompositeList<TSource> m
             , Func<TSource, ICompositeList<TResult>> f
@@ -93,6 +94,12 @@ namespace Weingartner.ReactiveCompositeCollections
             , Func<TSource, ICompositeList<TICompositeList>> f
             , Func<TSource, TICompositeList, TResult> g
             ) => m.Bind(x => f(x).Bind(y => new CompositeList<TResult>(g(x,y))));
+
+        public static ICompositeList<TResult> SelectMany<TSource, TICompositeList, TResult>
+            ( this IObservable<TSource> m
+            , Func<TSource, ICompositeList<TICompositeList>> f
+            , Func<TSource, TICompositeList, TResult> g
+            ) => m.ToSingletonCompositeList().Bind(x => f(x).Bind(y => new CompositeList<TResult>(g(x,y))));
 
         public static ICompositeList<TResult> SelectMany<TSource, TICompositeList, TResult>
             ( this ICompositeList<TSource> m
