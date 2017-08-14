@@ -207,6 +207,12 @@ namespace Weingartner.ReactiveCompositeCollections
             @this.Source = @this.Source.RemoveRange(value);
         }
 
+        public static void Clear<T>
+            (this CompositeSourceList<T> @this )
+        {
+            @this.Source = ImmutableList<T>.Empty;
+        }
+
         public static void Remove<T>
             (this CompositeSourceList<T> @this,
              T value )
@@ -222,6 +228,11 @@ namespace Weingartner.ReactiveCompositeCollections
         public static ICompositeList<T> Concat<T>
             (this ICompositeList<T> @this,
              ICompositeList<T> other) => @this.Items.CombineLatest(other.Items,(a,b)=>a.Concat(b)).ToCompositeList();
+
+        public static ICompositeList<T> Concat<T>(this IEnumerable<ICompositeList<T>> @this)
+        {
+            return @this.Aggregate( (a, b) => a.Concat( b ) );
+        }
 
         public static ICompositeList<T> ToCompositeList<T>
             (this IObservable<ICompositeList<T>> @this) =>
@@ -427,5 +438,6 @@ namespace Weingartner.ReactiveCompositeCollections
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 }
