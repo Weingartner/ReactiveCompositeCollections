@@ -11,8 +11,8 @@ the lines in the heirarchy as a flat reactive object
     Widget wa = new Widget();
     Widget wb = new Widget();
     
-    widgets.Add(wa.Lines);
-    widgets.Add(wa.Lines);
+    nestedLines.Add(wa.Lines);
+    nestedLines.Add(wa.Lines);
     
     ICompositeList<Line> allLines = 
                    from lines in nestedLines
