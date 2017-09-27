@@ -1,5 +1,4 @@
 param([string]$apikey, [string]$configuration="Release") 
-param([string]$apikey) 
 
 # Remove any old nuget packages
 gci -r -include bin, obj | rm -rec -fo
