@@ -1,15 +1,10 @@
 param([string]$apikey) 
 
-
-# Remove any old nuget packages
-gci -r -include bin, obj | rm -rec -fo
-# Build new nuget packages
-dotnet restore
-dotnet pack /p:Version=$(gitversion /output json /showvariable FullSemVer) --configuration Release
+$version=gitversion /output json /showvariable FullSemVer
+write-host "VERSION is $version"
+$args="/p:Version=$version"
+dotnet pack -o ./artifacts  --configuration Release /p:Version=$version ReactiveCompositeCollections\ReactiveCompositeCollections.csproj
 # Get all nuget packages under the specific folders
 $packages = gci -r -filter *.nupkg ReactiveCompositeCollections
-# Publish them all
-foreach ($package in $packages) {
-    & dotnet nuget push $package
-}
+dotnet nuget push ReactiveCompositeCollections\artifacts\ReactiveCompositeCollections.$version.nupkg
 

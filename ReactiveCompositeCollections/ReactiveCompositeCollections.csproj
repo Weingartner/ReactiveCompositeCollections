@@ -8,7 +8,6 @@
 
   <PropertyGroup>
     <PackageId>ReactiveCompositeCollections</PackageId>
-    <PackageVersion>1.3.0</PackageVersion>
     <Authors>Weingartner</Authors>
     <Description>A .Net library for composing reactive collections 
         providing monadic types to support LINQ.</Description>
