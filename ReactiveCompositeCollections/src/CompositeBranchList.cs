@@ -8,7 +8,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using DiffLib;
-using ReactiveUI;
 using Weingartner.ReactiveCompositeCollections.Annotations;
 
 namespace Weingartner.ReactiveCompositeCollections
