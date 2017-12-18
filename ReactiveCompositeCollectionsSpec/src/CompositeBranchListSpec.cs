@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Reactive.Subjects;
 using System.Security.Cryptography;
 using FluentAssertions;
@@ -10,8 +11,26 @@ using Xunit;
 
 namespace Weingartner.ReactiveCompositeCollectionsSpec
 {
-    public class CompositeListSpec
+    public class CompositeSourceListSpec
     {
+        [Fact]
+        public void TakeShouldWork()
+        {
+            var a = new CompositeSourceList<int>();
+            var b = a.Take( 5 );
+
+            using (var s = b.Subscribe())
+            {
+                s.Items.Should().BeEmpty();
+                a.AddRange( Enumerable.Range( 0,10 ) );
+                s.Items.ShouldBeEquivalentTo( Enumerable.Range( 0,5 ) );
+                a.InsertAt( 0,15 );
+                s.Items.ShouldBeEquivalentTo( new[] {15, 0, 1, 2, 3} );
+                a.Remove( 3 );
+                s.Items.ShouldBeEquivalentTo( new[] {15, 0, 1, 2, 4} );
+            }
+
+        }
         [Fact]
         public void ManuallyNesting()
         {

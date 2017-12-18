@@ -108,6 +108,9 @@ namespace Weingartner.ReactiveCompositeCollections
 
         public static CompositeListSubscription<T> Subscribe<T>
             (this ICompositeList<T> @this) => new CompositeListSubscription<T>(@this);
+
+        public static ICompositeList<T> Take<T>(this ICompositeList<T> source, int n) => 
+            source.Items.Select( v => v.Take( n ) ).ToCompositeList();
     }
 
     public class CompositeList<T> : ICompositeList<T>
