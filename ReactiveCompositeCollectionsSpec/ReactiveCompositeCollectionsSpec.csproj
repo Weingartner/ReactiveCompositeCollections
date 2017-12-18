@@ -8,9 +8,6 @@
     <ProjectReference Include="..\ReactiveCompositeCollections\ReactiveCompositeCollections.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Properties\" />
