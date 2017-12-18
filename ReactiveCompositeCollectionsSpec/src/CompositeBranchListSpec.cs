@@ -31,6 +31,91 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             }
 
         }
+
+        [Fact]
+        public void DynamicTakeShouldWork()
+        {
+            var aa = new CompositeSourceList<int>();
+            var filter = new BehaviorSubject<int>( 0 );
+
+            var c =
+                from f in filter
+                from a in aa.Take( f )
+                select a;
+
+            using (var s = c.Subscribe())
+            {
+                s.Items.Should().BeEmpty();
+                aa.AddRange( Enumerable.Range( 0,10 ) );
+                s.Items.Should().BeEmpty();
+                filter.OnNext( 3 );
+                s.Items.ShouldBeEquivalentTo( new []{0,1,2} );
+                aa.InsertAt( 0,15 );
+                s.Items.ShouldBeEquivalentTo( new []{15,0,1} );
+                filter.OnNext( 2 );
+                s.Items.ShouldBeEquivalentTo( new []{15,0} );
+                filter.OnNext( 4 );
+                s.Items.ShouldBeEquivalentTo( new []{15,0,1,2} );
+
+            }
+
+        }
+
+
+        [Fact]
+        public void TakeWithSelectManyShouldWork()
+        {
+            var aa = new CompositeSourceList<int>(  );
+            var bb = new CompositeSourceList<int>(  );
+
+
+            var cc = (from a in aa
+                     from b in bb
+                     select (a, b)).Take( 4 );
+
+
+            using (var s = cc.Subscribe())
+            {
+                aa.AddRange( new []{0,1} );
+                bb.AddRange( new []{10,11} );
+
+                s.Items.ShouldBeEquivalentTo( new[]{(0,10), (0,11), (1,10), (1,11)} );
+
+                bb.InsertAt( 0, 99 );
+
+                s.Items.ShouldBeEquivalentTo( new[]{(0,99), (0,10), (0,11), (1,99)} );
+            }
+        }
+
+        [Fact]
+        public void TakeWithSelectManyAndLetShouldWork()
+        {
+            var aa = new CompositeSourceList<int>(  );
+            var bb = new CompositeSourceList<int>(  );
+
+
+            var cc = (from a in aa
+                     from b in bb
+                     let sum = a + b
+                     select sum
+                     ).Take( 4 );
+
+
+            using (var s = cc.Subscribe())
+            {
+                aa.AddRange( new []{0,1} );
+                bb.AddRange( new []{10,11} );
+
+                s.Items.ShouldBeEquivalentTo( new[]{10, 11, 11, 12} );
+
+                bb.InsertAt( 0, 99 );
+
+                s.Items.ShouldBeEquivalentTo( new[]{99, 10, 11, 100} );
+            }
+
+
+
+        }
         [Fact]
         public void ManuallyNesting()
         {
@@ -129,14 +214,21 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             }
             
         }
+
         [Fact]
         public void DynamicWhereShouldWork()
         {
             var a = new CompositeSourceList<int>();
             var b = new CompositeSourceList<int>();
+
+            // A filter that is updated at runtime
+            // and combined into the query
             var filter = new BehaviorSubject<Func<int,bool>>(v=>v>5);
 
-            var c = a.Concat(b).Where(filter);
+            var c = from f in filter
+                    from item in a.Concat( b )
+                    where f( item )
+                    select item;
 
             using (var r = c.Subscribe())
             {
@@ -145,11 +237,9 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 r.Items.Should().BeEquivalentTo();
                 b.AddRange(new List<int> {5,6,7});
                 r.Items.Should().BeEquivalentTo(6,7);
-            }
 
-            filter.OnNext(v=>true);
-            using (var r = c.Subscribe())
-            {
+                // Change the filter to allow all items.
+                filter.OnNext(v=>true);
                 r.Items.Should().BeEquivalentTo(1, 2, 3, 5, 6, 7);
             }            
         }
