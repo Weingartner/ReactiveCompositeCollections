@@ -23,11 +23,11 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             {
                 s.Items.Should().BeEmpty();
                 a.AddRange( Enumerable.Range( 0,10 ) );
-                s.Items.ShouldBeEquivalentTo( Enumerable.Range( 0,5 ) );
+                s.Items.Should().BeEquivalentTo( Enumerable.Range( 0,5 ) );
                 a.InsertAt( 0,15 );
-                s.Items.ShouldBeEquivalentTo( new[] {15, 0, 1, 2, 3} );
+                s.Items.Should().BeEquivalentTo( new[] {15, 0, 1, 2, 3} );
                 a.Remove( 3 );
-                s.Items.ShouldBeEquivalentTo( new[] {15, 0, 1, 2, 4} );
+                s.Items.Should().BeEquivalentTo( new[] {15, 0, 1, 2, 4} );
             }
 
         }
@@ -49,13 +49,13 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 aa.AddRange( Enumerable.Range( 0,10 ) );
                 s.Items.Should().BeEmpty();
                 filter.OnNext( 3 );
-                s.Items.ShouldBeEquivalentTo( new []{0,1,2} );
+                s.Items.Should().BeEquivalentTo( new []{0,1,2} );
                 aa.InsertAt( 0,15 );
-                s.Items.ShouldBeEquivalentTo( new []{15,0,1} );
+                s.Items.Should().BeEquivalentTo( new []{15,0,1} );
                 filter.OnNext( 2 );
-                s.Items.ShouldBeEquivalentTo( new []{15,0} );
+                s.Items.Should().BeEquivalentTo( new []{15,0} );
                 filter.OnNext( 4 );
-                s.Items.ShouldBeEquivalentTo( new []{15,0,1,2} );
+                s.Items.Should().BeEquivalentTo( new []{15,0,1,2} );
 
             }
 
@@ -79,11 +79,11 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 aa.AddRange( new []{0,1} );
                 bb.AddRange( new []{10,11} );
 
-                s.Items.ShouldBeEquivalentTo( new[]{(0,10), (0,11), (1,10), (1,11)} );
+                s.Items.Should().BeEquivalentTo( new[]{(0,10), (0,11), (1,10), (1,11)} );
 
                 bb.InsertAt( 0, 99 );
 
-                s.Items.ShouldBeEquivalentTo( new[]{(0,99), (0,10), (0,11), (1,99)} );
+                s.Items.Should().BeEquivalentTo( new[]{(0,99), (0,10), (0,11), (1,99)} );
             }
         }
 
@@ -106,11 +106,11 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
                 aa.AddRange( new []{0,1} );
                 bb.AddRange( new []{10,11} );
 
-                s.Items.ShouldBeEquivalentTo( new[]{10, 11, 11, 12} );
+                s.Items.Should().BeEquivalentTo( new[]{10, 11, 11, 12} );
 
                 bb.InsertAt( 0, 99 );
 
-                s.Items.ShouldBeEquivalentTo( new[]{99, 10, 11, 100} );
+                s.Items.Should().BeEquivalentTo( new[]{99, 10, 11, 100} );
             }
 
 
@@ -130,7 +130,7 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             {
                 s.Items.Should().BeEmpty();
                 a.Source=a.Source.Add(1);
-                s.Items.ShouldBeEquivalentTo(new[]{1});
+                s.Items.Should().BeEquivalentTo(new[]{1});
                 b.Source=b.Source.Add(1);
                 s.Items.Should().BeEquivalentTo(new[]{1,1});
                 b.Source=b.Source.Add(3);
@@ -151,7 +151,7 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             {
                 r.Items.Count.Should().Be(0);
                 a.Source = a.Source.Add(new List<int> {1, 2, 3});
-                r.Items.Should().BeEquivalentTo(1, 2, 3);
+                r.Items.Should().BeEquivalentTo(new[] {1, 2, 3});
             }
 
         }
@@ -169,7 +169,7 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             {
                 r.Items.Count.Should().Be(0);
                 a.Source = a.Source.Add(new List<int> {1, 2, 3});
-                r.Items.Should().BeEquivalentTo(1, 2, 3);
+                r.Items.Should().BeEquivalentTo(new[] {1, 2, 3});
             }
 
         }
@@ -186,11 +186,11 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             {
                 r.Items.Count.Should().Be(0);
                 a.AddRange(new List<int> {1,2,3});
-                r.Items.Should().BeEquivalentTo(1, 2, 3);
+                r.Items.Should().BeEquivalentTo(new[] {1, 2, 3});
                 b.AddRange(new List<int> {5,6,7});
-                r.Items.Should().BeEquivalentTo(1, 2, 3,5,6,7);
+                r.Items.Should().BeEquivalentTo(new[] {1, 2, 3,5,6,7});
                 a.Source = ImmutableList<int>.Empty;
-                r.Items.Should().BeEquivalentTo(5,6,7);
+                r.Items.Should().BeEquivalentTo(new[] {5,6,7});
             }
 
         }
@@ -206,11 +206,11 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             {
                 r.Items.Count.Should().Be(0);
                 a.AddRange(new List<int> {1,2,3});
-                r.Items.Should().BeEquivalentTo();
+                r.Items.Should().BeEmpty();
                 b.AddRange(new List<int> {5,6,7});
-                r.Items.Should().BeEquivalentTo(6,7);
+                r.Items.Should().BeEquivalentTo(new[]{6,7});
                 a.Source = ImmutableList<int>.Empty;
-                r.Items.Should().BeEquivalentTo(6,7);
+                r.Items.Should().BeEquivalentTo(new[]{6,7});
             }
             
         }
@@ -234,13 +234,13 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             {
                 r.Items.Count.Should().Be(0);
                 a.AddRange(new List<int> {1,2,3});
-                r.Items.Should().BeEquivalentTo();
+                r.Items.Should().BeEmpty();
                 b.AddRange(new List<int> {5,6,7});
-                r.Items.Should().BeEquivalentTo(6,7);
+                r.Items.Should().BeEquivalentTo(new[]{6,7});
 
                 // Change the filter to allow all items.
                 filter.OnNext(v=>true);
-                r.Items.Should().BeEquivalentTo(1, 2, 3, 5, 6, 7);
+                r.Items.Should().BeEquivalentTo(new[]{1, 2, 3, 5, 6, 7});
             }            
         }
 
@@ -331,11 +331,11 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             a.Remove(2); // Doesn't cause a remove event as 2 belongs to both sources
             a.Remove(1);
 
-            addedResult[0].Should().BeEquivalentTo(1, 2);
-            addedResult[1].Should().BeEquivalentTo(8);
+            addedResult[0].Should().BeEquivalentTo(new[]{1, 2});
+            addedResult[1].Should().BeEquivalentTo(new[]{8});
 
-            removedResult[0].Should().BeEquivalentTo(8);
-            removedResult[1].Should().BeEquivalentTo(1);
+            removedResult[0].Should().BeEquivalentTo(new[]{8});
+            removedResult[1].Should().BeEquivalentTo(new[]{1});
 
 
 
@@ -362,17 +362,17 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
 
             using (var s = e.Subscribe())
             {
-                s.Items.Should().BeEquivalentTo(1,2);
+                s.Items.Should().BeEquivalentTo(new[] {1,2});
                 a.Source = a.Source.Remove(b);
-                s.Items.Should().BeEquivalentTo();
+                s.Items.Should().BeEmpty();
                 a.Source = a.Source.Add(c);
-                s.Items.Should().BeEquivalentTo();
+                s.Items.Should().BeEmpty();
                 c.Source = c.Source.Add(2);
-                s.Items.Should().BeEquivalentTo(2);
+                s.Items.Should().BeEquivalentTo(new[] {2});
                 c.Source = c.Source.Add(3);
-                s.Items.Should().BeEquivalentTo(2,3);
+                s.Items.Should().BeEquivalentTo(new[] {2,3});
                 a.Source=a.Source.Add(b);
-                s.Items.Should().BeEquivalentTo(2,3,1,2);
+                s.Items.Should().BeEquivalentTo(new[] {2,3,1,2});
             }
         }
         [Fact]
@@ -399,17 +399,17 @@ namespace Weingartner.ReactiveCompositeCollectionsSpec
             using (var s = e.Subscribe())
             {
                 s.PropertyChanged += (_,__)=>count++;
-                s.Items.Should().BeEquivalentTo("1x", "2x");
+                s.Items.Should().BeEquivalentTo(new[] {"1x", "2x"});
                 a.Source=a.Source.Remove(bt);
-                s.Items.Should().BeEquivalentTo();
+                s.Items.Should().BeEmpty();
                 a.Source=a.Source.Add(c.Select(v=>v.ToString()));
-                s.Items.Should().BeEquivalentTo();
+                s.Items.Should().BeEmpty();
                 c.Source=c.Source.Add(2);
-                s.Items.Should().BeEquivalentTo("2x");
+                s.Items.Should().BeEquivalentTo(new[] {"2x"});
                 c.Source=c.Source.Add(3);
-                s.Items.Should().BeEquivalentTo("2x", "3x");
+                s.Items.Should().BeEquivalentTo(new[] {"2x", "3x"});
                 a.Source=a.Source.Add(bt);
-                s.Items.Should().BeEquivalentTo("2x", "3x", "1x", "2x");
+                s.Items.Should().BeEquivalentTo(new[] {"2x", "3x", "1x", "2x"});
             }
 
             // 6 changes should be recorded

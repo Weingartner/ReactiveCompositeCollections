@@ -25,7 +25,7 @@ namespace Weingartner.Utils.Spec
             using (var s = y.Subscribe())
             {
                 a.Source=a.Source.Add(1);
-                s.Items.ShouldBeEquivalentTo(new[]{1});
+                s.Items.Should().BeEquivalentTo(new[]{1});
                 b.Source=b.Source.Add(1);
                 s.Items.Should().BeEquivalentTo(new[]{1});
                 b.Source=b.Source.Add(3);
@@ -55,17 +55,17 @@ namespace Weingartner.Utils.Spec
 
             using (var s = e.Subscribe())
             {
-                s.Items.Should().BeEquivalentTo(1,2);
+                s.Items.Should().BeEquivalentTo(new[] {1,2});
                 a.Source=a.Source.Remove(b);
-                s.Items.Should().BeEquivalentTo();
+                s.Items.Should().BeEmpty();
                 a.Source=a.Source.Add(c);
-                s.Items.Should().BeEquivalentTo();
+                s.Items.Should().BeEmpty();
                 c.Source=c.Source.Add(2);
-                s.Items.Should().BeEquivalentTo(2);
+                s.Items.Should().BeEquivalentTo(new[] {2});
                 c.Source=c.Source.Add(3);
-                s.Items.Should().BeEquivalentTo(2,3);
+                s.Items.Should().BeEquivalentTo(new[] {2,3});
                 a.Source=a.Source.Add(b);
-                s.Items.Should().BeEquivalentTo(2,3,1);
+                s.Items.Should().BeEquivalentTo(new[] {2,3,1});
             }
         }
         [Fact]
@@ -91,17 +91,17 @@ namespace Weingartner.Utils.Spec
             using (var s = e.Subscribe())
             {
                 s.WhenAnyValue(p => p.Items).Subscribe(_ => count++);
-                s.Items.Should().BeEquivalentTo("1x", "2x");
+                s.Items.Should().BeEquivalentTo(new[] {"1x", "2x"});
                 a.Source=a.Source.Remove(bt);
                 s.Items.Should().BeEquivalentTo();
                 a.Source=a.Source.Add(c.Select(v=>v.ToString()));
                 s.Items.Should().BeEquivalentTo();
                 c.Source=c.Source.Add(2);
-                s.Items.Should().BeEquivalentTo("2x");
+                s.Items.Should().BeEquivalentTo(new[] {"2x"});
                 c.Source=c.Source.Add(3);
-                s.Items.Should().BeEquivalentTo("2x", "3x");
+                s.Items.Should().BeEquivalentTo(new[] { "2x", "3x"});
                 a.Source=a.Source.Add(bt);
-                s.Items.Should().BeEquivalentTo("2x", "3x", "1x");
+                s.Items.Should().BeEquivalentTo(new[] {"2x", "3x", "1x"});
             }
             // 6 changes should be recorded
             count.Should().Be(5);
